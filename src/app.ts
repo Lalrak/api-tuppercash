@@ -1,6 +1,6 @@
 import http from "http";
 import app from "./server/index.js";
-import config from "./server/config/env.js";
+import config from "./server/config/env.config.js";
 
 const server = http.createServer(app);
 

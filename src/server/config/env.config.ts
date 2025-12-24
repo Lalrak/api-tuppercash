@@ -12,8 +12,11 @@ const config = {
   port: Number(process.env.PORT) || 3000,
   databaseUrl: process.env.DATABASE_URL,
   jwtSecret: process.env.JWT_SECRET,
-  logLevel: process.env.LOG_LEVEL || "info",
   isProd: process.env.NODE_ENV === "production",
+  logLevel: process.env.LOG_LEVEL || "info",
+  logToFile: process.env.LOG_TO_FILE || "true",
+  logDir: process.env.LOG_DIR ?? "logs",
+  logFile: process.env.LOG_FILE ?? "app.log",
 };
 
 export default config;
