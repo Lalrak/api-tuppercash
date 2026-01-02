@@ -1,27 +1,28 @@
-import type { Request, Response, NextFunction } from "express";
-import { randomUUID } from "node:crypto";
-import { logger } from "../config/logger.config.js";
+import type { RequestHandler } from "express";
+import { v4 as uuidv4 } from "uuid";
+import { withContext, logger } from "../config/logger.config.js";
 
-export function requestLogger(req: Request, res: Response, next: NextFunction) {
-  const requestId = req.header("x-request-id") ?? randomUUID();
-
-  const log = logger.child({
+export const requestLogger: RequestHandler = (req, res, next) => {
+  const start = Date.now();
+  const requestId = (req.headers["x-request-id"] as string) ?? uuidv4();
+  const reqLogger = withContext({
     requestId,
     method: req.method,
-    path: req.path,
+    path: req.originalUrl ?? req.url,
   });
 
-  (req as any).log = log;
-
-  const start = Date.now();
+  (req as any).log = reqLogger;
+  reqLogger.info({ headers: req.headers }, "request:start");
 
   res.on("finish", () => {
-    (log.info({
-      statusCode: res.statusCode,
-      dutarionMs: Date.now() - start,
-    }),
-      "request finished");
+    const duration = Date.now() - start;
+    reqLogger.info({ statusCode: res.statusCode, duration }, "request:finish");
+  });
+
+  res.on("error", (err) => {
+    reqLogger.error({ err }, "request:error");
+    logger.error({ err, requestId }, "response_error");
   });
 
   next();
-}
+};

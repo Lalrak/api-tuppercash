@@ -7,7 +7,7 @@ app.use(express.json());
 
 app.use(requestLogger);
 
-app.get("api/v1/health", (req, res) => {
+app.get("/api/v1/health", (req, res) => {
   res.status(200).json({ status: "ok", timestamp: new Date().toISOString() });
 });
 
