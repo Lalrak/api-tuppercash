@@ -1,5 +1,5 @@
 import express from "express";
-import { requestLogger } from "./middlewares/requestLogger.middleware.js";
+import { requestLogger } from "./middlewares/request-logger.middleware.js";
 
 const app = express();
 
