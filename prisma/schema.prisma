@@ -1,0 +1,130 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id           String        @id @default(cuid())
+  name         String
+  login        String        @unique
+  passwordHash String
+  role         Role          @default(USER)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  lastLoginAt  DateTime?
+  tokenVersion Int           @default(0)
+  transactions Transaction[]
+}
+
+model Client {
+  id           String        @id @default(cuid())
+  code         Int           @unique
+  name         String
+  cpf          String        @unique
+  phone        String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  transactions Transaction[]
+}
+
+model Transaction {
+  id            String            @id @default(cuid())
+  client        Client            @relation(fields: [clientId], references: [id])
+  clientId      String
+  bank          Bank              @relation(fields: [bankId], references: [id])
+  bankId        String
+  user          User              @relation(fields: [userId], references: [id])
+  userId        String
+  billingType   BillingType
+  status        TransactionStatus @default(PENDING)
+  week          Int
+  phone         String?
+  grossAmount   Decimal           @db.Decimal(10, 2)
+  netAmount     Decimal           @db.Decimal(10, 2)
+  notes         String?
+  nsu           String?
+  invoiceNumber Int?
+  exported      Boolean           @default(false)
+  importedErp   Boolean           @default(false)
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+  fee           TransactionFee?
+  installments  Installment[]
+
+  @@index([clientId])
+  @@index([userId])
+  @@index([bankId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model TransactionFee {
+  id            String       @id @default(cuid())
+  transaction   Transaction? @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+  transactionId String       @unique
+  feePercentage Decimal?     @db.Decimal(5, 2)
+  feeAmount     Decimal?     @db.Decimal(10, 2)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  @@index([transactionId])
+}
+
+model Installment {
+  id            String             @id @default(cuid())
+  transaction   Transaction        @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+  transactionId String
+  number        Int
+  amount        Decimal            @db.Decimal(10, 2)
+  dueDate       DateTime?
+  paidAt        DateTime?
+  status        InstallmentStatus?
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+
+  @@unique([transactionId, number])
+  @@index([transactionId])
+}
+
+model Bank {
+  id           String        @id @default(cuid())
+  name         String
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  transactions Transaction[]
+}
+
+enum Role {
+  ADMIN
+  USER
+}
+
+enum BillingType {
+  BOLETO
+  CREDIT_CARD
+  PIX
+  UNDEFINED
+}
+
+enum TransactionStatus {
+  APPROVED
+  CANCELED
+  PAID
+  PENDING
+}
+
+enum InstallmentStatus {
+  OPEN
+  PAID
+  OVERDUE
+  CANCELED
+}
