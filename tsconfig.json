@@ -37,8 +37,8 @@
     "isolatedModules": true,
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
-    "skipLibCheck": true,
+    "skipLibCheck": true
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_module","dist"]
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_module", "dist"]
 }
