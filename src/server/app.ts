@@ -1,9 +1,12 @@
 import express from "express";
 import { requestLogger } from "./middlewares/request-logger.middleware.js";
+import { initSecurity } from "./config/security.config.js";
 
 const app = express();
 
 app.use(express.json());
+
+initSecurity(app);
 
 app.use(requestLogger);
 

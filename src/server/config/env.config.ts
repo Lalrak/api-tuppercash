@@ -17,6 +17,7 @@ const config = {
   logToFile: process.env.LOG_TO_FILE || "true",
   logDir: process.env.LOG_DIR ?? "logs",
   logFile: process.env.LOG_FILE ?? "app.log",
+  allowedOrigins: process.env.ALLOWED_ORIGINS ?? "http://localhost:3000",
 };
 
 export default config;
