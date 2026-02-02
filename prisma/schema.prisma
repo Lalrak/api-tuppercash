@@ -80,16 +80,16 @@ model TransactionFee {
 }
 
 model Installment {
-  id            String             @id @default(cuid())
-  transaction   Transaction        @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+  id            String            @id @default(cuid())
+  transaction   Transaction       @relation(fields: [transactionId], references: [id], onDelete: Cascade)
   transactionId String
   number        Int
-  amount        Decimal            @db.Decimal(10, 2)
+  amount        Decimal           @db.Decimal(10, 2)
   dueDate       DateTime?
   paidAt        DateTime?
-  status        InstallmentStatus?
-  createdAt     DateTime           @default(now())
-  updatedAt     DateTime           @updatedAt
+  status        InstallmentStatus @default(OPEN)
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
 
   @@unique([transactionId, number])
   @@index([transactionId])
