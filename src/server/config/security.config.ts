@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import cors from "cors";
 import helmet from "helmet";
-import config from "./env.config.js";
+import config from "./app.config.js";
 
 export function initSecurity(app: Express) {
   app.disable("x-powered-by");

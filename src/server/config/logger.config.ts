@@ -1,6 +1,6 @@
 import pino from "pino";
 import type { LoggerOptions, TransportTargetOptions } from "pino";
-import config from "./env.config.js";
+import config from "./app.config.js";
 
 const baseOptions: LoggerOptions = {
   level: config.logLevel,
